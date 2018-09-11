@@ -4,12 +4,16 @@ date_default_timezone_set("Asia/Jakarta");
 
 # Fungsi untuk membuat kode automatis
 function buatKode($tabel, $inisial){
-    $struktur	= mysql_query("SELECT * FROM $tabel");
-    $field		= mysql_field_name($struktur,0);
-    $panjang	= mysql_field_len($struktur,0);
+    global $koneksidb;
+//    $koneksidb = mysqli_connect("localhost", "root", "","program_tokodb");
+    $struktur	= mysqli_query($koneksidb,"SELECT * FROM $tabel");
+    $field		= mysqli_fetch_field_direct($struktur,0)    ;
+    $panjang	= mysqli_fetch_field_direct($struktur,0);
 
-    $qry	= mysql_query("SELECT MAX(".$field.") FROM ".$tabel);
-    $row	= mysql_fetch_array($qry);
+//    $qry	= mysqli_query($koneksidb,"SELECT MAX(".$field->struktur.") FROM $tabel");
+    $qry	= mysqli_query($koneksidb,"SELECT MAX(".$field->max_length.") FROM $tabel");
+//    $qry	= die(var_dump($field));
+    $row	= mysqli_fetch_array($qry);
     if ($row[0]=="") {
         $angka=0;
     }
@@ -19,9 +23,11 @@ function buatKode($tabel, $inisial){
 
     $angka++;
     $angka	=strval($angka);
+//    die(var_dump($angka));
     $tmp	="";
     for($i=1; $i<=($panjang-strlen($inisial)-strlen($angka)); $i++) {
         $tmp=$tmp."0";
+//        die(var_dump($angka));
     }
     return $inisial.$tmp.$angka;
 }
